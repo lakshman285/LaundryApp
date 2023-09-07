@@ -13,7 +13,7 @@ export const CartSize = createSlice({
       if (itemPresent) {
         itemPresent.quantity++;
       } else {
-        state.cart.push({...action.payload, quantity: 1})
+        state.cart.push({...action.payload, quantity: 1});
       }
     },
     removeFromCart: (state, action) => {
@@ -42,9 +42,17 @@ export const CartSize = createSlice({
         itemPresent.quantity--;
       }
     },
+    cleanCart: state => {
+      state.cart = [];
+    },
   },
 });
 
-export const {addToCart, removeFromCart, incrementQuantity, decrementQuantity} =
-  CartSize.actions;
+export const {
+  addToCart,
+  removeFromCart,
+  incrementQuantity,
+  decrementQuantity,
+  cleanCart,
+} = CartSize.actions;
 export default CartSize.reducer;

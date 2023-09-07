@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Pressable,
   TextInput,
+  Alert,
 } from 'react-native';
 import React, {useState} from 'react';
 
@@ -13,12 +14,39 @@ import EmailIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import PasswordIcon from 'react-native-vector-icons/Ionicons';
 import PhoneIcon from 'react-native-vector-icons/Feather';
 import {useNavigation} from '@react-navigation/native';
+import {createUserWithEmailAndPassword} from 'firebase/auth';
+import {auth, db} from '../firebase';
+import {doc, setDoc} from 'firebase/firestore';
 
 const RegisterScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const navigation = useNavigation();
+
+  const register = () => {
+    if (email === '' || password === '' || phone === '') {
+      Alert.alert('Invalid Details', 'Please fill all the details', [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'OK', onPress: () => console.log('OK Pressed')},
+      ]);
+    }
+    createUserWithEmailAndPassword(auth, email, password).then(
+      userCredentials => {
+        console.log('user credentials', userCredentials);
+        const user = userCredentials._tokenResponse.email;
+        const myUserUid = auth.currentUser.uid;
+        setDoc(doc(db, 'users', `${myUserUid}`), {
+          email: user,
+          phone: phone,
+        });
+      },
+    );
+  };
   return (
     <SafeAreaView
       style={{
@@ -96,6 +124,7 @@ const RegisterScreen = () => {
             />
           </View>
           <Pressable
+            onPress={register}
             style={{
               width: 200,
               backgroundColor: '#318CE7',
